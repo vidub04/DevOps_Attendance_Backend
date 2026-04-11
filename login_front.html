@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <title>Classroom Login</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 body {
@@ -17,23 +19,50 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #0f172a;
+  background: #0b1120;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft gradient glow */
+body::before {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #2563eb33, transparent 70%);
+  top: -150px;
+  left: -150px;
+}
+
+body::after {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #06b6d433, transparent 70%);
+  bottom: -150px;
+  right: -150px;
 }
 
 /* Card */
 .container {
-  background: #111827;
+  position: relative;
+  background: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(20px);
   padding: 40px;
-  border-radius: 16px;
-  width: 340px;
+  border-radius: 18px;
+  width: 360px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 /* Title */
 h2 {
-  color: #e5e7eb;
-  margin-bottom: 25px;
+  color: #f9fafb;
+  margin-bottom: 30px;
+  font-weight: 500;
 }
 
 /* Inputs */
@@ -50,13 +79,13 @@ h2 {
   background: #020617;
   color: #e5e7eb;
   outline: none;
-  transition: 0.3s;
+  transition: all 0.25s ease;
 }
 
 .input-box input:focus,
 .input-box select:focus {
-  border-color: #14b8a6;
-  box-shadow: 0 0 8px rgba(20, 184, 166, 0.4);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
 }
 
 /* Button */
@@ -65,26 +94,27 @@ button {
   padding: 12px;
   border-radius: 10px;
   border: none;
-  background: #14b8a6;
-  color: #022c22;
-  font-weight: 600;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  color: white;
+  font-weight: 500;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.25s ease;
 }
 
 button:hover {
-  background: #0d9488;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(59,130,246,0.4);
 }
 
 /* Toggle */
 .toggle {
-  margin-top: 18px;
+  margin-top: 20px;
   font-size: 14px;
   color: #9ca3af;
 }
 
 .toggle span {
-  color: #14b8a6;
+  color: #38bdf8;
   cursor: pointer;
   margin-left: 5px;
   font-weight: 500;
@@ -111,7 +141,6 @@ button:hover {
       <input type="text" required id="enrollment" placeholder="Enrollment Number">
     </div>
 
-    <!-- Batch Dropdown -->
     <div class="input-box">
       <select id="batch" required>
         <option value="" disabled selected>Select Batch</option>
@@ -121,7 +150,6 @@ button:hover {
       </select>
     </div>
 
-    <!-- Email (only for signup) -->
     <div id="extraFields" class="hidden">
       <div class="input-box">
         <input type="email" placeholder="Email">
@@ -156,7 +184,6 @@ function toggleMode() {
 
 function handleSubmit(e) {
   e.preventDefault();
-
   const name = document.getElementById("name").value;
   const batch = document.getElementById("batch").value;
 
