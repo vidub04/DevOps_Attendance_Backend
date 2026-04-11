@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Classroom Login</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f172a;
+}
+
+/* Card */
+.container {
+  background: #111827;
+  padding: 40px;
+  border-radius: 16px;
+  width: 340px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+/* Title */
+h2 {
+  color: #e5e7eb;
+  margin-bottom: 25px;
+}
+
+/* Inputs */
+.input-box {
+  margin-bottom: 18px;
+}
+
+.input-box input,
+.input-box select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: #e5e7eb;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-box input:focus,
+.input-box select:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 8px rgba(20, 184, 166, 0.4);
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #14b8a6;
+  color: #022c22;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #0d9488;
+}
+
+/* Toggle */
+.toggle {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.toggle span {
+  color: #14b8a6;
+  cursor: pointer;
+  margin-left: 5px;
+  font-weight: 500;
+}
+
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2 id="title">Login</h2>
+
+  <form onsubmit="handleSubmit(event)">
+    
+    <div class="input-box">
+      <input type="text" required id="name" placeholder="Full Name">
+    </div>
+
+    <div class="input-box">
+      <input type="text" required id="enrollment" placeholder="Enrollment Number">
+    </div>
+
+    <!-- Batch Dropdown -->
+    <div class="input-box">
+      <select id="batch" required>
+        <option value="" disabled selected>Select Batch</option>
+        <option value="IT1">IT1</option>
+        <option value="IT2">IT2</option>
+        <option value="AIML">AIML</option>
+      </select>
+    </div>
+
+    <!-- Email (only for signup) -->
+    <div id="extraFields" class="hidden">
+      <div class="input-box">
+        <input type="email" placeholder="Email">
+      </div>
+    </div>
+
+    <button type="submit" id="submitBtn">Login</button>
+  </form>
+
+  <div class="toggle">
+    <span id="toggleText">Don't have an account?</span>
+    <span onclick="toggleMode()" id="toggleBtn">Sign Up</span>
+  </div>
+</div>
+
+<script>
+let isLogin = true;
+
+function toggleMode() {
+  isLogin = !isLogin;
+
+  document.getElementById("title").innerText = isLogin ? "Login" : "Create Account";
+  document.getElementById("submitBtn").innerText = isLogin ? "Login" : "Sign Up";
+  document.getElementById("extraFields").classList.toggle("hidden");
+
+  document.getElementById("toggleText").innerText = isLogin 
+    ? "Don't have an account?" 
+    : "Already have an account?";
+
+  document.getElementById("toggleBtn").innerText = isLogin ? "Sign Up" : "Login";
+}
+
+function handleSubmit(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const batch = document.getElementById("batch").value;
+
+  alert(`Welcome ${name} 🚀\nBatch: ${batch}`);
+}
+</script>
+
+</body>
+</html>
