@@ -12,6 +12,10 @@ url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
+@app.route('/')
+def home():
+    return "Backend is running!"
+
 # 📝 SIGNUP ROUTE
 @app.route('/signup', methods=['POST'])
 def signup():
