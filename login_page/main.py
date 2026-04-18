@@ -40,17 +40,24 @@ def signup():
 def login():
     data = request.json
 
+    # First check enrolment exists
     response = supabase.table("Login_Attendance") \
         .select("*") \
         .eq("Enrolment_Number", data["enrolment"]) \
-        .eq("Password", data["password"]) \
         .execute()
 
-    if response.data:
+    if not response.data:
+        return jsonify({"message": "User not found ❌"})
+
+    user = response.data[0]
+
+    # Now check password
+    if user["Password"] == data["password"]:
         return jsonify({"message": "Login successful!"})
     else:
-        return jsonify({"message": "Invalid credentials"})
+        return jsonify({"message": "Wrong password ❌"})
+    
 
-
+    
 if __name__ == '__main__':
     app.run(debug=True)
