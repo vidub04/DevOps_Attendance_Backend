@@ -1,11 +1,29 @@
 from flask import Flask, request, jsonify
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from flask_cors import CORS
 import os
 
 load_dotenv()
 
 app = Flask(__name__)
+
+
+CORS(app, resources={
+    r"/*": {
+        "origins": "https://frontenddevop-eight.vercel.app"
+    }
+})
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'https://frontenddevop-eight.vercel.app')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
+
+
+
 
 # 🔗 Supabase setup
 url = os.getenv("SUPABASE_URL")
@@ -35,12 +53,13 @@ def signup():
     return jsonify({"message": "Signup successful!"})
 
 
-# 🔐 LOGIN ROUTE
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'OPTIONS'])
 def login():
+    if request.method == 'OPTIONS':
+        return jsonify({"message": "OK"}), 200
+
     data = request.json
 
-    # First check enrolment exists
     response = supabase.table("Login_Attendance") \
         .select("*") \
         .eq("Enrolment_Number", data["enrolment"]) \
@@ -51,7 +70,6 @@ def login():
 
     user = response.data[0]
 
-    # Now check password
     if user["Password"] == data["password"]:
         return jsonify({"message": "Login successful!"})
     else:
@@ -59,5 +77,6 @@ def login():
     
 
     
+
 if __name__ == '__main__':
     app.run(debug=True)
