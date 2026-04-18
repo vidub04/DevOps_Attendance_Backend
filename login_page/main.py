@@ -76,7 +76,7 @@ def login():
         return jsonify({"message": "Wrong password ❌"})
     
 
-    
+
 
 if __name__ == '__main__':
     app.run(debug=True)
