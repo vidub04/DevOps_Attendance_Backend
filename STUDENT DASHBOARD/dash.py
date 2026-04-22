@@ -79,3 +79,42 @@ def get_dashboard(enrolment_number: str):
             "error_type": type(e).__name__,
             "error_message": str(e)
         }
+        @app.route('/student-dashboard/<enrolment_number>', methods=['GET'])
+def get_dashboard(enrolment_number):
+    try:
+        response = (
+            supabase.table("Login_Attendance")
+            .select("*")
+            .eq("Enrolment_Number", enrolment_number)
+            .execute()
+        )
+
+        data = response.data
+
+        if not data:
+            return jsonify({"error": "Student not found"})
+
+        student = data[0]
+
+        total_classes = 40
+        attended_classes = 32
+        missed_classes = total_classes - attended_classes
+        percentage = (attended_classes / total_classes) * 100
+
+        return jsonify({
+            "student": {
+                "name": student.get("Name_of_Student", ""),
+                "branch": student.get("Branch", ""),
+                "semester": student.get("Semester", ""),
+                "email": student.get("College_Email", "")
+            },
+            "overview": {
+                "total_classes": total_classes,
+                "attended_classes": attended_classes,
+                "missed_classes": missed_classes,
+                "attendance_percentage": round(percentage, 2)
+            }
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
