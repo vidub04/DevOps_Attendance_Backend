@@ -70,39 +70,6 @@ def get_dashboard(enrolment_number):
         return jsonify({"error": str(e)}), 500
 
 
-# ---------------- MARK ATTENDANCE ----------------
-@app.route("/mark-attendance", methods=["POST", "OPTIONS"])
-def mark_attendance():
-    if request.method == "OPTIONS":
-        return "", 200  # 🔥 VERY IMPORTANT
-
-    try:
-        data = request.json
-
-        enrolment_number = data["enrollment_number"]
-        name = data["name"]
-        today = str(date.today())
-
-        existing = supabase.table("attendance") \
-            .select("*") \
-            .eq("enrollment_number", enrolment_number) \
-            .eq("date", today) \
-            .execute()
-
-        if existing.data:
-            return jsonify({"message": "Already marked today"})
-
-        supabase.table("attendance").insert({
-            "enrollment_number": enrolment_number,
-            "name": name,
-            "date": today,
-            "status": "Attended"
-        }).execute()
-
-        return jsonify({"message": "Attendance marked successfully"})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
 # ---------------- RUN ----------------
