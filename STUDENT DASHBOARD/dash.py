@@ -68,3 +68,33 @@ def get_dashboard(enrolment_number: str):
         return {
             "error": str(e)
         }
+        from datetime import date
+
+@app.post("/mark-attendance")
+def mark_attendance(data: dict):
+    try:
+        enrolment_number = data["enrollment_number"]
+        name = data["name"]
+        today = str(date.today())
+
+        # prevent duplicate marking
+        existing = supabase.table("attendance") \
+            .select("*") \
+            .eq("enrollment_number", enrolment_number) \
+            .eq("date", today) \
+            .execute()
+
+        if existing.data:
+            return {"message": "Already marked today"}
+
+        supabase.table("attendance").insert({
+            "enrollment_number": enrolment_number,
+            "name": name,
+            "date": today,
+            "status": "Attended"
+        }).execute()
+
+        return {"message": "Attendance marked successfully"}
+
+    except Exception as e:
+        return {"error": str(e)}
