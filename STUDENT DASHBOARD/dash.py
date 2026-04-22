@@ -9,7 +9,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://devops-attendance-frontend-xi.vercel.app"],
     allow_credentials=True,
-    allow_methods=["POST", "GET", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 # Supabase connection
@@ -97,3 +97,6 @@ def mark_attendance(data: dict):
 
     except Exception as e:
         return {"error": str(e)}
+        @app.options("/{full_path:path}")
+def preflight(full_path: str):
+    return {"message": "OK"}
