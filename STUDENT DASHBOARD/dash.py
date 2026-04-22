@@ -9,7 +9,8 @@ app = Flask(__name__)
 # ✅ CORS
 CORS(
     app,
-    resources={r"/*": {"origins": "https://devops-attendance-frontend-xi.vercel.app"}}
+    resources={r"/*": {"origins": "https://devops-attendance-frontend-xi.vercel.app"}},
+    supports_credentials=True
 )
 
 # ✅ Supabase connection
@@ -70,8 +71,11 @@ def get_dashboard(enrolment_number):
 
 
 # ---------------- MARK ATTENDANCE ----------------
-@app.route("/mark-attendance", methods=["POST"])
+@app.route("/mark-attendance", methods=["POST", "OPTIONS"])
 def mark_attendance():
+    if request.method == "OPTIONS":
+        return "", 200  # 🔥 VERY IMPORTANT
+
     try:
         data = request.json
 
