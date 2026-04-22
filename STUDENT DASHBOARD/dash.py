@@ -1,18 +1,15 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from supabase import create_client, Client
 from datetime import date
 import os
 
-app = FastAPI()
+app = Flask(__name__)
 
 # ✅ CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://devops-attendance-frontend-xi.vercel.app"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+CORS(
+    app,
+    resources={r"/*": {"origins": "https://devops-attendance-frontend-xi.vercel.app"}}
 )
 
 # ✅ Supabase connection
@@ -22,14 +19,14 @@ supabase: Client = create_client(url, key)
 
 
 # ---------------- HOME ----------------
-@app.get("/")
+@app.route("/", methods=["GET"])
 def home():
-    return {"message": "Backend is running"}
+    return jsonify({"message": "Backend is running"})
 
 
 # ---------------- DASHBOARD ----------------
-@app.get("/student-dashboard/{enrolment_number}")
-def get_dashboard(enrolment_number: str):
+@app.route("/student-dashboard/<enrolment_number>", methods=["GET"])
+def get_dashboard(enrolment_number):
     try:
         response = (
             supabase.table("Login_Attendance")
@@ -41,7 +38,7 @@ def get_dashboard(enrolment_number: str):
         data = response.data
 
         if not data:
-            return {"error": "Student not found"}
+            return jsonify({"error": "Student not found"}), 404
 
         student = data[0]
 
@@ -50,7 +47,7 @@ def get_dashboard(enrolment_number: str):
         missed_classes = total_classes - attended_classes
         percentage = (attended_classes / total_classes) * 100
 
-        return {
+        return jsonify({
             "student": {
                 "name": student.get("Name_of_Student", ""),
                 "branch": student.get("Branch", ""),
@@ -66,16 +63,18 @@ def get_dashboard(enrolment_number: str):
             "alerts": [
                 "Attendance below 75%"
             ]
-        }
+        })
 
     except Exception as e:
-        return {"error": str(e)}
+        return jsonify({"error": str(e)}), 500
 
 
 # ---------------- MARK ATTENDANCE ----------------
-@app.post("/mark-attendance")
-def mark_attendance(data: dict):
+@app.route("/mark-attendance", methods=["POST"])
+def mark_attendance():
     try:
+        data = request.json
+
         enrolment_number = data["enrollment_number"]
         name = data["name"]
         today = str(date.today())
@@ -87,7 +86,7 @@ def mark_attendance(data: dict):
             .execute()
 
         if existing.data:
-            return {"message": "Already marked today"}
+            return jsonify({"message": "Already marked today"})
 
         supabase.table("attendance").insert({
             "enrollment_number": enrolment_number,
@@ -96,13 +95,12 @@ def mark_attendance(data: dict):
             "status": "Attended"
         }).execute()
 
-        return {"message": "Attendance marked successfully"}
+        return jsonify({"message": "Attendance marked successfully"})
 
     except Exception as e:
-        return {"error": str(e)}
+        return jsonify({"error": str(e)}), 500
 
 
-# ---------------- CATCH OPTIONS (CORS FIX) ----------------
-@app.options("/{full_path:path}")
-def preflight(full_path: str):
-    return {"message": "OK"}
+# ---------------- RUN ----------------
+if __name__ == "__main__":
+    app.run(debug=True)
