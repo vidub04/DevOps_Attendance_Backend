@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
+from datetime import date
 import os
 
 app = FastAPI()
 
+# ✅ CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://devops-attendance-frontend-xi.vercel.app"],
@@ -12,17 +14,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# Supabase connection
-url = os.getenv("SUPABASE_URL")
-key = os.getenv("SUPABASE_KEY")
+
+# ✅ Supabase connection
+url = os.getenv("https://befrnamptjppdadsrrpo.supabase.co")
+key = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlZnJuYW1wdGpwcGRhZHNycnBvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTkwNjE3NywiZXhwIjoyMDkxNDgyMTc3fQ.WMN3xCKnUNDmKYlQksZWcxRb1eHlQ13H4azyDiOi-NE")
 supabase: Client = create_client(url, key)
 
 
+# ---------------- HOME ----------------
 @app.get("/")
 def home():
     return {"message": "Backend is running"}
 
 
+# ---------------- DASHBOARD ----------------
 @app.get("/student-dashboard/{enrolment_number}")
 def get_dashboard(enrolment_number: str):
     try:
@@ -64,11 +69,10 @@ def get_dashboard(enrolment_number: str):
         }
 
     except Exception as e:
-        return {
-            "error": str(e)
-        }
-        from datetime import date
+        return {"error": str(e)}
 
+
+# ---------------- MARK ATTENDANCE ----------------
 @app.post("/mark-attendance")
 def mark_attendance(data: dict):
     try:
@@ -76,7 +80,6 @@ def mark_attendance(data: dict):
         name = data["name"]
         today = str(date.today())
 
-        # prevent duplicate marking
         existing = supabase.table("attendance") \
             .select("*") \
             .eq("enrollment_number", enrolment_number) \
@@ -97,6 +100,9 @@ def mark_attendance(data: dict):
 
     except Exception as e:
         return {"error": str(e)}
-        @app.options("/{full_path:path}")
+
+
+# ---------------- CATCH OPTIONS (CORS FIX) ----------------
+@app.options("/{full_path:path}")
 def preflight(full_path: str):
     return {"message": "OK"}
