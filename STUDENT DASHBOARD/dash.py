@@ -8,11 +8,10 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://devops-attendance-frontend-xi.vercel.app"],
-    allow_credentials=False,
-    allow_methods=["*"],
+    allow_credentials=True,
+    allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
 )
-
 # Supabase connection
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
