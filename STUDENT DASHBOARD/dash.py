@@ -102,7 +102,4 @@ def mark_attendance(data: dict):
         return {"error": str(e)}
 
 
-# ---------------- CATCH OPTIONS (CORS FIX) ----------------
-@app.options("/{full_path:path}")
-def preflight(full_path: str):
-    return {"message": "OK"}
+
