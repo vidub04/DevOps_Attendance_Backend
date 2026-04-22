@@ -36,7 +36,7 @@ def signup():
         "Password": data["password"]
     }
 
-    response = supabase.table("Login_Attendance").insert(db_data).execute()
+    response = supabase.table("Login").insert(db_data).execute()
 
     return jsonify({"message": "Signup successful!"})
 
@@ -48,7 +48,7 @@ def login():
 
     data = request.json
 
-    response = supabase.table("Login_Attendance") \
+    response = supabase.table("Login") \
         .select("*") \
         .eq("Enrolment_Number", data["enrolment"]) \
         .execute()
@@ -68,7 +68,7 @@ def login():
 @app.route("/student-dashboard/<enrolment_number>", methods=["GET"])
 def get_dashboard(enrolment_number):
     try:
-        response = supabase.table("Login_Attendance") \
+        response = supabase.table("Login") \
             .select("*") \
             .eq("Enrolment_Number", enrolment_number) \
             .execute()
