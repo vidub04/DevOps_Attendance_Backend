@@ -42,6 +42,9 @@ def signup():
     return jsonify({"message": "Signup successful!"})
 
 
+##login route
+
+
 @app.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     if request.method == 'OPTIONS':
@@ -125,8 +128,8 @@ def mark_attendance():
 
         existing = supabase.table("attendance") \
             .select("*") \
-            .eq("enrolment_number", enrolment_number) \
-            .eq("date", today) \
+            .eq("Enrolment_Number", enrolment_number) \
+            .eq("Date", today) \
             .execute()
 
         if existing.data:
