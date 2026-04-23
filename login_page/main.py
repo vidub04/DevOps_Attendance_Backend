@@ -126,6 +126,17 @@ def mark_attendance():
         name = data.get("name")
         today = str(date.today())
 
+        # 1. Get student name from DB
+        student = supabase.table("Login") \
+            .select("Name_of_Student") \
+            .eq("Enrolment_Number", enrolment_number) \
+            .single() \
+            .execute()
+
+        name = student.data["Name_of_Student"]
+
+       
+
         existing = supabase.table("attendance") \
             .select("*") \
             .eq("Enrolment_Number", enrolment_number) \
