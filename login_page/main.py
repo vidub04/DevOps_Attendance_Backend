@@ -47,7 +47,9 @@ def login():
     if request.method == 'OPTIONS':
         return jsonify({"message": "OK"}), 200
 
-    data = request.json
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data received"}), 400
 
     response = supabase.table("Login") \
         .select("*") \
@@ -69,20 +71,25 @@ def login():
 @app.route("/student-dashboard/<enrolment_number>", methods=["GET"])
 def get_dashboard(enrolment_number):
     try:
-        response = supabase.table("Login") \
+        # ✅ get student info
+        student_res = supabase.table("Login") \
             .select("*") \
             .eq("Enrolment_Number", enrolment_number) \
             .execute()
 
-        data = response.data
+        # ✅ get attendance data (IMPORTANT FIX)
+        attendance_res = supabase.table("attendance") \
+            .select("*") \
+            .eq("enrollemt_number", enrolment_number) \
+            .execute()
 
-        if not data:
+        if not student_res.data:
             return jsonify({"error": "Student not found"}), 404
 
-        student = data[0]
+        student = student_res.data[0]
 
         total_classes = 40
-        attended_classes = 32
+        attended_classes = len(attendance_res.data)  # 🔥 REAL DATA
         missed_classes = total_classes - attended_classes
         percentage = (attended_classes / total_classes) * 100
 
@@ -104,35 +111,37 @@ def get_dashboard(enrolment_number):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
-
-
 @app.route("/mark-attendance", methods=["POST", "OPTIONS"])
 def mark_attendance():
     if request.method == "OPTIONS":
-        return "", 200  # 🔥 handles CORS preflight
+        return "", 200
 
     try:
-        data = request.json
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data received"}), 400
 
-        enrolment_number = data["enrollment_number"]
-        name = data["name"]
+        # ✅ match frontend
+        enrolment_number = data.get("enrolment_number")
+        name = data.get("name")
         today = str(date.today())
 
-        # check if already marked
+        if not enrolment_number:
+            return jsonify({"error": "Missing enrolment_number"}), 400
+
+        # ✅ match Supabase column EXACTLY (typo included)
         existing = supabase.table("attendance") \
             .select("*") \
-            .eq("enrollment_number", enrolment_number) \
+            .eq("enrollemt_number", enrolment_number) \
             .eq("date", today) \
             .execute()
 
         if existing.data:
             return jsonify({"message": "Already marked today"})
 
-        # insert attendance
+        # ✅ insert with same wrong spelling
         supabase.table("attendance").insert({
-            "enrollment_number": enrolment_number,
+            "enrollemt_number": enrolment_number,
             "name": name,
             "date": today,
             "status": "Attended"
@@ -142,7 +151,6 @@ def mark_attendance():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
