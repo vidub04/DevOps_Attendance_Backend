@@ -133,10 +133,10 @@ def mark_attendance():
             return jsonify({"message": "Already marked today"})
 
         supabase.table("attendance").insert({
-            "enrolment_number": enrolment_number,
-            "name": name,
-            "date": today,
-            "status": "Attended"
+            "Enrolment_Number": enrolment_number,
+            "Name_of_Student": name,
+            "Date": today,
+            "Status": "Attended"
         }).execute()
 
         return jsonify({"message": "Attendance marked successfully"})
