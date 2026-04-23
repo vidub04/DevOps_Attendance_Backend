@@ -123,7 +123,7 @@ def mark_attendance():
         data = request.get_json()
 
         enrolment_number = data.get("enrolment_number")  # ⚠️ FIXED NAME
-        name = data.get("name")
+        
         today = str(date.today())
 
         # 1. Get student name from DB
