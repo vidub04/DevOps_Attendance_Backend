@@ -28,7 +28,7 @@ def mark_attendance():
     try:
         data = request.get_json()
 
-        enrolment_number = data.get("enrolment_number")   # ⚠️ FIXED NAME
+        enrolment_number = data.get("enrolment_number")  # ⚠️ FIXED NAME
         name = data.get("name")
         today = str(date.today())
 
