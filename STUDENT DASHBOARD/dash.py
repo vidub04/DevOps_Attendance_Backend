@@ -59,14 +59,10 @@ def mark_attendance():
 @app.route("/student-dashboard/<enrolment_number>", methods=["GET"])
 def student_dashboard(enrolment_number):
     try:
+        # ✅ Student info
         student_res = supabase.table("Login_Attendance") \
             .select("*") \
             .eq("Enrolment_Number", enrolment_number) \
-            .execute()
-
-        attendance_res = supabase.table("attendance") \
-            .select("*") \
-            .eq("enrolment_number", enrolment_number) \
             .execute()
 
         if not student_res.data:
@@ -74,10 +70,19 @@ def student_dashboard(enrolment_number):
 
         student = student_res.data[0]
 
+        # ✅ FIXED: attendance column name
+        attendance_res = supabase.table("attendance") \
+            .select("*") \
+            .eq("Enrolment_Number", enrolment_number) \
+            .execute()
+
+        attendance_data = attendance_res.data or []
+
         total_classes = 40
-        attended_classes = len(attendance_res.data)
+        attended_classes = len(attendance_data)
         missed_classes = total_classes - attended_classes
-        percentage = (attended_classes / total_classes) * 100
+
+        percentage = (attended_classes / total_classes) * 100 if total_classes else 0
 
         return jsonify({
             "student": {
@@ -93,8 +98,7 @@ def student_dashboard(enrolment_number):
 
     except Exception as e:
         print("ERROR:", str(e))
-        return jsonify({"error": str(e)}), 500
-
+        return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
