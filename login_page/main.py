@@ -73,7 +73,7 @@ def login():
 def student_dashboard(enrolment_number):
     try:
         # ✅ Student info
-        student_res = supabase.table("Login_Attendance") \
+        student_res = supabase.table("Login") \
             .select("*") \
             .eq("Enrolment_Number", enrolment_number) \
             .execute()
